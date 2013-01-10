@@ -71,32 +71,7 @@ public class StationActivity extends Activity implements OnClickListener
 		return null;
 	}
 
-	/**
-	 * Returns the string representation of the unit associated to a given data type.
-	 * @param dataType the data type
-	 * @return the string representation of the unit associated to <tt>dataType</tt>
-	 */
-	private final String dataTypeToUnitString(DataTypeEnum dataType)
-	{
-		// DATE, TEMP1, TEMP2, PRESSURE, WIND_SPEED, WIND_DIR, HYGRO, LUX;
-		if (dataType == DataTypeEnum.DATE)
-			return "";
-		if (dataType == DataTypeEnum.TEMP1)
-			return "°C";
-		if (dataType == DataTypeEnum.TEMP2)
-			return "°C";
-		if (dataType == DataTypeEnum.PRESSURE)
-			return "hPa";
-		if (dataType == DataTypeEnum.HYGRO)
-			return "%";
-		if (dataType == DataTypeEnum.LUX)
-			return "lux";
-		if (dataType == DataTypeEnum.WIND_DIR)
-			return "m/s";
-		if (dataType == DataTypeEnum.WIND_SPEED)
-			return "°";
-		return null;
-	}
+	
 
 	/**
 	 * Internal method used to change the favorite status (selected or not), inducing changing
@@ -118,7 +93,6 @@ public class StationActivity extends Activity implements OnClickListener
 		favoriteIconView.setImageDrawable(favoriteIconDrawable);
 		favoriteIconView.setEnabled(!favorite);
 		favoriteIconView.invalidate();
-		
 	}
 
 	// TODO finish writing comment
@@ -222,7 +196,7 @@ public class StationActivity extends Activity implements OnClickListener
 			if (stationData != null)
 			{
 				type.setText(StationActivity.this.dataTypeToString(stationData.getType()));
-				value.setText(stationData.getValue().toString() + dataTypeToUnitString(stationData.getType()));
+				value.setText(stationData.getValue().toString() + stationData.getType().unitToString());
 			}
 			else
 			{
