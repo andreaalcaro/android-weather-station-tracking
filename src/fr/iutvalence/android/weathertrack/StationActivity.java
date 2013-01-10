@@ -71,8 +71,6 @@ public class StationActivity extends Activity implements OnClickListener
 		return null;
 	}
 
-	
-
 	/**
 	 * Internal method used to change the favorite status (selected or not), inducing changing
 	 * associated icon and its "clickability".
@@ -164,15 +162,7 @@ public class StationActivity extends Activity implements OnClickListener
 			}
 		});
 	}
-
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu)
-//	{
-//		// Inflate the menu; this adds items to the action bar if it is present.
-//		getMenuInflater().inflate(R.menu.activity_station, menu);
-//		return true;
-//	}
-
+	
 	// TODO finish writing comment
 	/**
 	 * @author sebastienjean
