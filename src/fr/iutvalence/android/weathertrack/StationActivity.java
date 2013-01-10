@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -93,6 +96,24 @@ public class StationActivity extends Activity implements OnClickListener
 		favoriteIconView.invalidate();
 	}
 
+	
+	//TODO finish writing comment
+	/**
+	 * @see android.app.Activity#onStart()
+	 */
+	@Override
+	protected void onStart()
+	{
+		super.onStart();
+		
+		this.station = ((MainApplication) this.getApplication()).getCurrentStation();
+		((TextView) this.findViewById(R.id.StationActivityTestViewStationID)).setText(this.station.getID());
+		
+		Station favorite = ((MainApplication) this.getApplication()).getFavoriteStation();
+	
+		this.setFavorite((favorite != null) && (this.station.equals(favorite)));
+	}
+
 	// TODO finish writing comment
 	/**
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -103,20 +124,21 @@ public class StationActivity extends Activity implements OnClickListener
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_station);
 
-		this.station = ((MainApplication) this.getApplication()).getCurrentStation();
-		((TextView) this.findViewById(R.id.StationActivityTestViewStationID)).setText(this.station.getID());
+		((ImageView) findViewById(R.id.StationActivityImageViewFavorite)).setOnClickListener(this);
 		
-		ImageView favoriteIconView = (ImageView) findViewById(R.id.StationActivityImageViewFavorite);
-		
-		Station favorite = ((MainApplication) this.getApplication()).getFavoriteStation();
-	
-		this.setFavorite((favorite != null) && (this.station.equals(favorite)));
-		
-		favoriteIconView.setOnClickListener(this);
 		this.data = new ArrayList<StationData>();
 		this.stationDetailsAdapter = new StationDetailsAdapter(this);
-		ListView listView = (ListView) findViewById(R.id.StationActivityListViewStationDetails);
-		listView.setAdapter(this.stationDetailsAdapter);
+		((ListView) findViewById(R.id.StationActivityListViewStationDetails)).setAdapter(this.stationDetailsAdapter);
+		
+		this.refreshStationData();
+	}
+
+	// TODO finish writing comment
+	/**
+	 * 
+	 */
+	private void refreshStationData()
+	{
 		this.progressDialog = ProgressDialog.show(this, getResources().getString(R.string.download_progress_dialog_title),
 				getResources().getString(R.string.download_progress_dialog_message), true);
 
@@ -129,7 +151,7 @@ public class StationActivity extends Activity implements OnClickListener
 			}
 		}, "stationDataRetriever").start();
 	}
-
+	
 	// TODO finish writing comment
 	/**
 	 * 

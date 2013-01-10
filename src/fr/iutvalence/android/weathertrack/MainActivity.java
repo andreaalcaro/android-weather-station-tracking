@@ -91,7 +91,7 @@ public class MainActivity extends Activity implements OnItemClickListener
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_main);
-
+		
 		this.mainApplication = (MainApplication) this.getApplication();
 
 		// Clear the list of known stations
@@ -139,7 +139,7 @@ public class MainActivity extends Activity implements OnItemClickListener
 		if (stationID != null)
 		{
 			this.mainApplication.setCurrentStationByID(stationID);
-			startActivity(new Intent(MainActivity.this, StationActivity.class));
+			startActivity(new Intent(this, StationActivity.class));
 		}
 	}
 

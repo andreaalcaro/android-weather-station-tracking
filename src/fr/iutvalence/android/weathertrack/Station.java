@@ -89,4 +89,40 @@ public class Station implements Comparable<Station>
 	{
 		return this.id.compareTo(another.id);
 	}
+
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
+		return result;
+	}
+
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Station other = (Station) obj;
+		if (this.id == null)
+		{
+			if (other.id != null)
+				return false;
+		}
+		else if (!this.id.equals(other.id))
+			return false;
+		return true;
+	}
+	
 }
