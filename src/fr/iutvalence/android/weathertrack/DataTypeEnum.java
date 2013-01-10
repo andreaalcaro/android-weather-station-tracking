@@ -43,7 +43,6 @@ public enum DataTypeEnum
 	
 	/**
 	 * Returns the string representation of the unit associated to a given data type.
-	 * @param dataType the data type
 	 * @return the string representation of the unit associated to <tt>dataType</tt>
 	 */
 	public String unitToString()

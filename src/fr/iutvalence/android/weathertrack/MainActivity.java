@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -68,7 +69,7 @@ public class MainActivity extends Activity implements OnItemClickListener
 	protected void onResume()
 	{
 		super.onResume();
-		
+
 		// Refreshing the favorite station view
 		this.favoriteStationAdapter = new StationInfoAdapter(this, R.layout.station_info_row,
 				Collections.singletonList(this.mainApplication.getFavoriteStation()));
@@ -91,36 +92,59 @@ public class MainActivity extends Activity implements OnItemClickListener
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_main);
-		
+
 		this.mainApplication = (MainApplication) this.getApplication();
 
-		// Clear the list of known stations
-		// TODO implement cache management
-		this.mainApplication.getStations().clear();
-
 		// Refreshing the list of known stations view
-		this.stationListAdapter = new StationInfoAdapter(this, R.layout.station_info_row, this.mainApplication.getStations());
+		this.stationListAdapter = new StationInfoAdapter(this, R.layout.station_info_row,
+				this.mainApplication.getStations());
 		ListView stationsListView = (ListView) findViewById(R.id.MainActivityListViewStations);
 		stationsListView.setAdapter(this.stationListAdapter);
 		stationsListView.setOnItemClickListener(this);
 
-		// Showing a "Please wait" progress dialog while retrieving data from server
-		this.progressDialog = ProgressDialog.show(this, getResources().getString(R.string.download_progress_dialog_title),
-				getResources().getString(R.string.download_progress_dialog_message), true);
+		Calendar now = Calendar.getInstance();
+		Calendar last = MainActivity.this.mainApplication.getLastStationListRequestDate();
 
-		// Retrieving data from server
-		new Thread(null, new Runnable()
+		if ((last == null) || (!(now.get(Calendar.DAY_OF_YEAR) == last.get(Calendar.DAY_OF_YEAR))))
 		{
-			@SuppressWarnings("synthetic-access")
-			public void run()
+			// Showing a "Please wait" progress dialog while retrieving data
+			// from
+			// server
+			this.progressDialog = ProgressDialog.show(this,
+					getResources().getString(R.string.download_progress_dialog_title),
+					getResources().getString(R.string.download_progress_dialog_message), true);
+
+			// Retrieving data from server
+			new Thread(null, new Runnable()
 			{
-				MainActivity.this.getStationList();
-			}
-		}, "stationListRetriever").start();
+				@SuppressWarnings("synthetic-access")
+				public void run()
+				{
+					MainActivity.this.getStationList();
+
+					// Adding an event to UI event queue to kill progress dialog
+					// and
+					// refresh station list view
+					runOnUiThread(new Runnable()
+					{
+						public void run()
+						{
+							MainActivity.this.progressDialog.dismiss();
+							MainActivity.this.stationListAdapter.notifyDataSetChanged();
+						}
+					});
+				}
+			}, "stationListRetriever").start();
+		}
+
+		// TODO further check the result of getStationList call
+		// (that should be a boolean)
+		MainActivity.this.mainApplication.setLastStationListRequestDate(now);
 	}
 
 	/**
-	 * @see android.widget.AdapterView.OnItemClickListener#onItemClick(android.widget.AdapterView, android.view.View, int, long)
+	 * @see android.widget.AdapterView.OnItemClickListener#onItemClick(android.widget.AdapterView,
+	 *      android.view.View, int, long)
 	 */
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id)
@@ -128,14 +152,15 @@ public class MainActivity extends Activity implements OnItemClickListener
 		String stationID = null;
 
 		// Retrieving the id of the selected station
-		
+
 		if (parent == (AdapterView<?>) this.findViewById(R.id.MainActivityListViewStations))
 			stationID = ((TextView) view.findViewById(R.id.StationInfoTextViewStationID)).getText().toString();
 		else // favorite station
 		if (this.mainApplication.getFavoriteStation() != null)
 			stationID = this.mainApplication.getFavoriteStation().getID();
 
-		// If station ID is not null (i.e. not the "not-yet-selected" favorite station), starting a new StationActivity
+		// If station ID is not null (i.e. not the "not-yet-selected" favorite
+		// station), starting a new StationActivity
 		if (stationID != null)
 		{
 			this.mainApplication.setCurrentStationByID(stationID);
@@ -148,6 +173,20 @@ public class MainActivity extends Activity implements OnItemClickListener
 	 */
 	private void getStationList()
 	{
+		// TODO remove this (debug purpose)
+		try
+		{
+			Thread.sleep(2000);
+		}
+		catch (InterruptedException e2)
+		{
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+
+		// Clear the list of known stations
+		this.mainApplication.getStations().clear();
+
 		JSONArray jsonStationList = null;
 		URL url = null;
 		try
@@ -171,7 +210,7 @@ public class MainActivity extends Activity implements OnItemClickListener
 			// TODO handle exception
 			e1.printStackTrace();
 		}
-		
+
 		// Reading JSON data
 		try
 		{
@@ -243,37 +282,32 @@ public class MainActivity extends Activity implements OnItemClickListener
 				// // TODO handle exception
 				e.printStackTrace();
 			}
-			
+
 			// Sorting list of known stations
 			Collections.sort(this.mainApplication.getStations());
 		}
-
-		// Adding an event to UI event queue to kill progress dialog and refresh station list view
-		runOnUiThread(new Runnable()
-		{
-			@SuppressWarnings("synthetic-access")
-			public void run()
-			{
-				MainActivity.this.progressDialog.dismiss();
-				MainActivity.this.stationListAdapter.notifyDataSetChanged();
-			}
-		});
 	}
 
 	/**
-	 * Internal class used to display station information (ID/description), used with both station list and favorite station views. 
+	 * Internal class used to display station information (ID/description), used
+	 * with both station list and favorite station views.
 	 * 
 	 * @author sebastienjean
-	 *
+	 * 
 	 */
 	private class StationInfoAdapter extends AbstractObjectListAdapter<Station>
 	{
 
 		/**
-		 * Creates a new <tt>StationInfoAdapter</tt> instance, from given context/layoutID/list of stations.
-		 * @param context the context associated to the list view
-		 * @param layoutID the layout associated to the list view
-		 * @param stations the list of stations
+		 * Creates a new <tt>StationInfoAdapter</tt> instance, from given
+		 * context/layoutID/list of stations.
+		 * 
+		 * @param context
+		 *            the context associated to the list view
+		 * @param layoutID
+		 *            the layout associated to the list view
+		 * @param stations
+		 *            the list of stations
 		 */
 		public StationInfoAdapter(Context context, int layoutID, List<Station> stations)
 		{
@@ -281,7 +315,9 @@ public class MainActivity extends Activity implements OnItemClickListener
 		}
 
 		/**
-		 * <i>Only the favorite station item is disable, when not yet initialized.</i>
+		 * <i>Only the favorite station item is disable, when not yet
+		 * initialized.</i>
+		 * 
 		 * @see android.widget.BaseAdapter#isEnabled(int)
 		 */
 		@Override
@@ -291,7 +327,8 @@ public class MainActivity extends Activity implements OnItemClickListener
 		}
 
 		/**
-		 * @see fr.iutvalence.android.weathertrack.AbstractObjectListAdapter#displayObject(int, android.view.View, android.view.ViewGroup)
+		 * @see fr.iutvalence.android.weathertrack.AbstractObjectListAdapter#displayObject(int,
+		 *      android.view.View, android.view.ViewGroup)
 		 */
 		@Override
 		protected View displayObject(int position, View view, ViewGroup parent)
@@ -301,9 +338,9 @@ public class MainActivity extends Activity implements OnItemClickListener
 			TextView descriptionTextView = (TextView) view.findViewById(R.id.StationInfoTextViewStationDescription);
 
 			if (station == null)
-			{	
+			{
 				idTextView.setText(getResources().getString(R.string.no_title));
-				descriptionTextView.setText(getResources().getString(R.string.no_content));			
+				descriptionTextView.setText(getResources().getString(R.string.no_content));
 			}
 
 			else

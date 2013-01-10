@@ -1,6 +1,7 @@
 package fr.iutvalence.android.weathertrack;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,6 +32,12 @@ public class MainApplication extends Application
 	 */
 	private Station favoriteStation;
 
+	
+	/**
+	 * Date of the last request sent to the server to retrieve the list of known stations.
+	 */
+	private Calendar lastStationListRequestDate;
+	
 	/**
 	 * @see android.app.Application#onCreate()
 	 */
@@ -42,6 +49,7 @@ public class MainApplication extends Application
 		this.stations = new ArrayList<Station>();
 		this.currentStation = null;
 		this.favoriteStation = null;
+		this.lastStationListRequestDate = null;
 	}
 
 	/**
@@ -112,4 +120,24 @@ public class MainApplication extends Application
 	{
 		this.favoriteStation = favoriteStation;
 	}
+
+	/**
+	 * Returns the date of the last request sent to the server to retrieve the list of known stations.
+	 * @return the date of the last request sent to the server to retrieve the list of known stations
+	 */
+	protected Calendar getLastStationListRequestDate()
+	{
+		return this.lastStationListRequestDate;
+	}
+
+	/**
+	 * Sets the date of the last request sent to the server to retrieve the list of known stations.
+	 * @param lastStationListRequestDate the date of the last request sent to the server to retrieve the list of known stations
+	 */
+	protected void setLastStationListRequestDate(Calendar lastStationListRequestDate)
+	{
+		this.lastStationListRequestDate = lastStationListRequestDate;
+	}
+	
+	
 }
