@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">WeatherTrack</string>
+    <string name="menu_settings">Settings</string>
+    <string name="favoriteStationText">Track your favorite station</string>
+    <string name="pickAStationText">Or pick a station to track</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_station">StationActivity</string>
+	<string name="data_type_date">Last report date</string>
+	<string name="data_type_temp1">Inside temperature</string>
+	<string name="data_type_temp2">Outside temperature</string>
+	<string name="data_type_pressure">Pressure</string>
+	<string name="data_type_hygro">Humidity</string>
+	<string name="data_type_lux">Luminosity</string>
+	<string name="data_type_windir">Wind direction</string>
+	<string name="data_type_winspeed">Wind speed</string>
+	<string name="no_title">&lt;Undefined&gt;</string>
+	<string name="no_content">&lt;None&gt;</string>
+	<string name="download_progress_dialog_title">Retrieving data&#8230;</string>
+	<string name="download_progress_dialog_message">Please wait&#8230;</string>
+</resources>
