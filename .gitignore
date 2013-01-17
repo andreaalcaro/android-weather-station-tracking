@@ -1,3 +1,7 @@
+.idea
+*.iws
+*.ipr
+*.iml
 /bin
 /.DS_Store
 /gen
